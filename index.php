@@ -13,6 +13,7 @@ class GitHubMarkdownRender {
 	const USER_AGENT = 'magnetikonline/ghmarkdownrender 1.0';
 	const MARKDOWN_EXT = '.md';
 	const CACHE_SESSION_KEY = 'ghmarkdownrender';
+	private $redis;
 
 	public function execute() {
 
@@ -424,6 +425,7 @@ EOT;
 
 	private function getMarkdownHtmlFromCache($markdownFilePath) {
 		if( !MD_DOC_CACHE )return false;
+		if( $_SERVER['MD_REDIS_HOST'] )return $this->getMarkdownHtmlFromRedis($markdownFilePath);
 		// start session, look for file path in session space
 		session_start();
 
@@ -439,8 +441,19 @@ EOT;
 			: false;
 	}
 
+	private function getMarkdownHtmlFromRedis($markdownFilePath){
+		$this->redis = new Redis();
+		$this->redis->connect( $_SERVER['MD_REDIS_HOST'] , $_SERVER['MD_REDIS_PORT'] );
+		if( isset($_SERVER['MD_REDIS_PASS']) ){
+			$this->redis->auth($_SERVER['MD_REDIS_PASS']);
+		}
+		$md5 = md5_file($markdownFilePath) ;
+		return $this->redis->get(self::CACHE_SESSION_KEY.':'.$md5);
+	}
+
 	private function setMarkdownHtmlToCache($markdownFilePath,$html) {
 		if( !MD_DOC_CACHE )return false;
+		if( $_SERVER['MD_REDIS_HOST'] )return $this->setMarkdownHtmlToRedis($markdownFilePath,$html);
 
 		if (!isset($_SESSION[self::CACHE_SESSION_KEY])) {
 			// create new session cache structure
@@ -452,7 +465,11 @@ EOT;
 			'html' => $html
 		];
 	}
+	private function setMarkdownHtmlToRedis($markdownFilePath,$html) {
+		$md5 = md5_file($markdownFilePath) ;
+		$this->redis->setEx(self::CACHE_SESSION_KEY.':'.$md5,3600,$html);
 
+	}
 	private function doGitHubMarkdownRequest($markdownSource) {
 
 		$curl = curl_init();
