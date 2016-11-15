@@ -414,14 +414,14 @@ EOT;
 		return
 			'</div></div>' .
 			(($footerMessageHtml !== false)
-				? '<p id="footer">' . $footerMessageHtml . '</p>'
+				? '<p id="footer">' . $footerMessageHtml . ' | <script>document.write("<a href="+location.href+"/raw >raw</a>");</script></p>'
 				: ''
 			) .
 			'</body></html>';
 	}
 
 	private function getMarkdownHtmlFromCache($markdownFilePath) {
-
+		if( !MD_DOC_CACHE )return false;
 		// start session, look for file path in session space
 		session_start();
 
