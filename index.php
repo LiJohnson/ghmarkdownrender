@@ -1,4 +1,10 @@
 <?php
+
+define(GITHUB_PERSONAL_ACCESS_TOKEN, $_SERVER['GITHUB_PERSONAL_ACCESS_TOKEN'] ?  $_SERVER['GITHUB_PERSONAL_ACCESS_TOKEN'] : 'token');
+define(DOCUMENT_ROOT, $_SERVER['MD_DOC_ROOT'] ?  $_SERVER['MD_DOC_ROOT'] : '/path/to/docroot');
+define(MD_DOC_CACHE, $_SERVER['MD_DOC_CACHE'] ?  $_SERVER['MD_DOC_CACHE'] == 'true' : true);
+
+
 class GitHubMarkdownRender {
 
 	const API_URL = 'https://api.github.com/markdown/raw';
@@ -8,16 +14,12 @@ class GitHubMarkdownRender {
 	const MARKDOWN_EXT = '.md';
 	const CACHE_SESSION_KEY = 'ghmarkdownrender';
 
-	const GITHUB_PERSONAL_ACCESS_TOKEN = 'token';
-	const DOCUMENT_ROOT = '/path/to/docroot';
-
-
 	public function execute() {
 
 		// validate DOCUMENT_ROOT exists
-		if (!is_dir(self::DOCUMENT_ROOT)) {
+		if (!is_dir(DOCUMENT_ROOT)) {
 			$this->renderErrorMessage(
-				'<p>Given <strong>DOCUMENT_ROOT</strong> of <strong>' . htmlspecialchars(self::DOCUMENT_ROOT) . '</strong> ' .
+				'<p>Given <strong>DOCUMENT_ROOT</strong> of <strong>' . htmlspecialchars(DOCUMENT_ROOT) . '</strong> ' .
 				'is not a valid directory, ensure it matches that of your local web server document root.</p>'
 			);
 
@@ -99,7 +101,7 @@ class GitHubMarkdownRender {
 
 		// request URI must end with self::MARKDOWN_EXT
 		return (preg_match('/\\' . self::MARKDOWN_EXT . '$/',$requestURI))
-			? self::DOCUMENT_ROOT . $requestURI
+			? DOCUMENT_ROOT . $requestURI
 			: false;
 	}
 
@@ -438,6 +440,7 @@ EOT;
 	}
 
 	private function setMarkdownHtmlToCache($markdownFilePath,$html) {
+		if( !MD_DOC_CACHE )return false;
 
 		if (!isset($_SESSION[self::CACHE_SESSION_KEY])) {
 			// create new session cache structure
@@ -459,7 +462,7 @@ EOT;
 				CURLOPT_HEADER => true,
 				CURLOPT_HTTPHEADER => [
 					'Accept: ' . self::GITHUB_API_VERSION_ACCEPT,
-					'Authorization: token ' . self::GITHUB_PERSONAL_ACCESS_TOKEN,
+					'Authorization: token ' . GITHUB_PERSONAL_ACCESS_TOKEN,
 					'Content-Type: ' . self::CONTENT_TYPE,
 					'User-Agent: ' . self::USER_AGENT
 				],
