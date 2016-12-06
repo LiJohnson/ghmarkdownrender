@@ -98,7 +98,7 @@ class GitHubMarkdownRender {
 		// get request URI, strip any querystring from end (used to trigger Markdown rendering from web server rewrite rule)
 		$requestURI = trim($_SERVER['REQUEST_URI']);
 		$requestURI = preg_replace('/\?.+$/','',$requestURI);
-
+		$requestURI = urldecode($requestURI);
 		// request URI must end with self::MARKDOWN_EXT
 		return (preg_match('/\\' . self::MARKDOWN_EXT . '$/',$requestURI))
 			? DOCUMENT_ROOT . $requestURI
