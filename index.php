@@ -552,7 +552,7 @@ EOT;
 		// update id="" values of heading anchor elements from generated Markdown -> HTML
 		$response = preg_replace(
 			'/<a id="user-content-([^"]+)" class="anchor" href="/',
-			'<a id="$1" class="anchor" href="/',
+			'<a id="$1" class="anchor" href="',
 			$response
 		);
 
