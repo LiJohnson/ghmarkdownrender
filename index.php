@@ -873,7 +873,7 @@ pre {
 </head>
 
 <body>
-<a href='./' class="go-back" >../</a>
+<a href='./' class="go-back" >. . /</a>
 
 <div id="frame"><div id="markdown" class="markdown-body">
 EOT;
