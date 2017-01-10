@@ -862,10 +862,18 @@ pre {
 			white-space: nowrap;
 			width: 978px;
 		}
+		.go-back{
+			margin: 10px 0;
+		    display: block;
+		    font-size: 1.2em;
+		    font-weight: bold;
+		    text-decoration: none;
+		}
 	</style>
 </head>
 
 <body>
+<a href='./' class="go-back" >../</a>
 
 <div id="frame"><div id="markdown" class="markdown-body">
 EOT;
