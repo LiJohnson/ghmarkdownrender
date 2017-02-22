@@ -15,6 +15,13 @@ class GitHubMarkdownRender {
 	const CACHE_SESSION_KEY = 'ghmarkdownrender';
 	private $redis;
 
+  public function GitHubMarkdownRender(){
+    $this->redis = new Redis();
+    $this->redis->connect( $_SERVER['MD_REDIS_HOST'] , $_SERVER['MD_REDIS_PORT'] );
+    if( isset($_SERVER['MD_REDIS_PASS']) ){
+      $this->redis->auth($_SERVER['MD_REDIS_PASS']);
+    }
+  }
 	public function execute() {
 
 		// validate DOCUMENT_ROOT exists
@@ -467,11 +474,6 @@ EOT;
 	}
 
 	private function getMarkdownHtmlFromRedis($markdownFilePath){
-		$this->redis = new Redis();
-		$this->redis->connect( $_SERVER['MD_REDIS_HOST'] , $_SERVER['MD_REDIS_PORT'] );
-		if( isset($_SERVER['MD_REDIS_PASS']) ){
-			$this->redis->auth($_SERVER['MD_REDIS_PASS']);
-		}
 		$md5 = md5_file($markdownFilePath) ;
 		return $this->redis->get(self::CACHE_SESSION_KEY.':'.$md5);
 	}
